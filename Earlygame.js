@@ -48,6 +48,7 @@ window.tabSwitch = function(id) {
     else if (child.id === id) show(child.id);
     else hide(child.id);
   });
+  console.log("Switched to tab:", id);
 };
 
 // Begin game
