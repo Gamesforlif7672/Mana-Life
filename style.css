@@ -1,0 +1,109 @@
+html, body {
+  font-family: system-ui, sans-serif;
+  background: #0e0e10;
+  color: white;
+  margin: 0;
+  padding: 1rem;
+}
+
+a {
+  text-decoration: none;
+  color: #ddd;
+}
+
+#begin {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #444;
+  padding: 1rem 1.25rem;
+  border: 3px solid #666;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#begin:hover {
+  filter: brightness(110%);
+}
+
+#gameArea {
+  display: none;
+}
+
+#tabBar {
+  margin-bottom: 10px;
+}
+
+.tab {
+  background: rgb(95, 92, 92);
+  width: 95px;
+  height: 40px;
+  color: white;
+  border: 3px solid rgb(70, 70, 70);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(115%);
+}
+
+.collect {
+  background-color: rgb(34, 139, 34);
+  border: 3px solid rgb(24, 100, 24);
+  border-radius: 6px;
+  margin: 5px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.craft {
+  background-color: rgb(200, 100, 0);
+  border: 3px solid rgb(160, 80, 0);
+  border-radius: 6px;
+  margin: 5px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.explore {
+  background-color: rgb(70, 130, 180);
+  border: 3px solid rgb(50, 100, 150);
+  border-radius: 6px;
+  margin: 5px;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Default hidden sections/buttons */
+#craftingTab,
+#crafting,
+#craftingT2,
+#inventory,
+#explore,
+#cave,
+#hunting,
+#makeT1Crafting,
+#fillBucket,
+#mineDirt,
+#mineStoneMetal,
+#rawMetalBtn,
+#huntBtn {
+  display: none;
+}
+
+/* Dynamic: cave and hunting tabs hidden until unlocked */
+#caveTab,
+#huntingTab {
+  display: none;
+}
+
+#inventoryDisplay {
+  font-size: 16px;
+  line-height: 1.4;
+}
