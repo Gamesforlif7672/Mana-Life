@@ -80,14 +80,9 @@ button:hover {
   cursor: pointer;
 }
 
-/* Default hidden sections/buttons */
+/* Default hidden buttons */
 #craftingTab,
-#crafting,
 #craftingT2,
-#inventory,
-#explore,
-#cave,
-#hunting,
 #makeT1Crafting,
 #fillBucket,
 #mineDirt,
@@ -97,15 +92,141 @@ button:hover {
   display: none;
 }
 
-/* Dynamic: cave, hunting and workshop tabs hidden until unlocked */
-#caveTab,
-#huntingTab,
-#workshopTab {
+#tabTemplates {
   display: none;
 }
 
-#workshop {
-  display: none;
+#tabBar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.slotSelect {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.slotSelect label {
+  color: #ddd;
+  font-size: 0.95rem;
+}
+
+.slotSelect select {
+  border: 3px solid #666;
+  border-radius: 6px;
+  background: #1b1c21;
+  color: white;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.slotSelect select:focus {
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 3px rgba(120, 120, 160, 0.2);
+}
+
+.slotSelect select option {
+  background: #0e0e10;
+  color: white;
+}
+
+.craftingTierSelect {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.craftingTierSelect label {
+  color: #ddd;
+  font-size: 0.95rem;
+}
+
+.craftingTierSelect select {
+  border: 3px solid #666;
+  border-radius: 6px;
+  background: #1b1c21;
+  color: white;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.craftingTierSelect select:focus {
+  outline: none;
+  border-color: #999;
+  box-shadow: 0 0 0 3px rgba(120, 120, 160, 0.2);
+}
+
+#contentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+#exploreResult {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.explorationLog {
+  background: #101114;
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-height: 180px;
+}
+
+.explorationEntry {
+  margin-bottom: 0.5rem;
+  color: #ddd;
+  line-height: 1.5;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+}
+
+.rarity {
+  font-weight: 700;
+}
+
+.rarity.common {
+  color: #9ee893;
+}
+
+.rarity.uncommon {
+  color: #64d2ff;
+}
+
+.rarity.rare {
+  color: #d3adff;
+}
+
+.rarity.epic {
+  color: #ff9cdb;
+}
+
+.column {
+  background: #121217;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 1rem;
+  min-height: 300px;
+}
+
+.columnTitle {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #ddd;
 }
 
 #inventoryDisplay {
