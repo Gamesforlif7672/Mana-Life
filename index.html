@@ -16,6 +16,7 @@
           <select id="slot1Select" onchange="setSlotTab(1, this.value)">
             <option value="forest">Forest</option>
             <option value="explore">River</option>
+            <option value="exploration">Exploration</option>
             <option value="inventory">Inventory</option>
             <option value="crafting">Crafting</option>
             <option value="cave">Cave</option>
@@ -27,6 +28,7 @@
           <select id="slot2Select" onchange="setSlotTab(2, this.value)">
             <option value="forest">Forest</option>
             <option value="explore">River</option>
+            <option value="exploration">Exploration</option>
             <option value="inventory">Inventory</option>
             <option value="crafting">Crafting</option>
             <option value="cave">Cave</option>
@@ -38,6 +40,7 @@
           <select id="slot3Select" onchange="setSlotTab(3, this.value)">
             <option value="forest">Forest</option>
             <option value="explore">River</option>
+            <option value="exploration">Exploration</option>
             <option value="inventory">Inventory</option>
             <option value="crafting">Crafting</option>
             <option value="cave">Cave</option>
@@ -73,14 +76,24 @@
           <p>River</p>
           <button id="fillBucket" class="collect" onclick="fillBucket()">Fill bucket with water</button><br>
           <button id="mineDirt" class="collect" onclick="mineDirt()">Dig dirt</button><br>
+          <button id="exploreMoreBtn" class="explore" onclick="exploreMore()">Explore further</button><br>
+          <div id="exploreResult" class="exploreResult"></div>
         </div>
 
         <div id="inventory">
           <button id="makeT1Crafting" class="craft" onclick="makeT1CraftingTable()">Make crude crafting table</button>
           <p id="inventoryDisplay">You have nothing.</p>
+          <button id="debugUnlockBooleans" class="explore" onclick="setAllBooleansTrue()">Debug: unlock all booleans</button>
         </div>
 
         <div id="crafting">
+          <div class="craftingTierSelect">
+            <label for="craftingTierSelect">Crafting tier</label>
+            <select id="craftingTierSelect" onchange="setCraftingTier(this.value)">
+              <option value="t1">T1 crafting</option>
+              <option value="t2" disabled>T2 crafting</option>
+            </select>
+          </div>
           <div id="craftingT1">
             <p>Crude crafting</p>
             <button class="craft" id="makeKnife" onclick="makeKnife()">Crude knife (10 sticks, 15 stones)</button><br>
@@ -95,7 +108,7 @@
             <button class="craft" id="makeT2Crafting" onclick="makeT2CraftingTable()">Better crafting table (30 metal, 15 clay, 5 rope)</button><br>
           </div>
           <div id="craftingT2">
-            <p>You’ve reached the temporary end. More content coming soon.</p>
+            <p>T2 crafting</p>
           </div>
         </div>
 
@@ -103,6 +116,11 @@
           <p id="caveStarter">You enter a cave. A pickaxe would help.</p>
           <button id="mineStoneMetal" class="collect" onclick="mineCave()">Mine stone and raw metal</button>
           <button id="rawMetalBtn" class="collect" onclick="collectRawMetal()">Mine raw metal</button>
+        </div>
+
+        <div id="exploration">
+          <p>Exploration Log</p>
+          <div id="explorationLogEntries" class="explorationLog"></div>
         </div>
 
         <div id="hunting">

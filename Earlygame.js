@@ -8,6 +8,12 @@ let dirt = 0;
 let water = 0;
 let clay = 0;
 let rawMetal = 0;
+let scrap = 0;
+let cloth = 0;
+let gear = 0;
+let wire = 0;
+let blueprint = 0;
+let explorationLog = []; 
 
 // Items with tiers
 let items = [
@@ -73,9 +79,10 @@ window.beginGame = function() {
   show("tabBar");
   setSlotTab(1, "forest");
   setSlotTab(2, "inventory");
-  setSlotTab(3, "crafting");
+  setSlotTab(3, "explore");
   updateInventoryDisplay();
   refreshUnlocks();
+  renderExplorationLog();
 };
 
 // Inventory display
@@ -97,6 +104,11 @@ function updateInventoryDisplay() {
       ${dirt ? `<li>Dirt: ${dirt}</li>` : ""}
       ${clay ? `<li>Clay: ${clay}</li>` : ""}
       ${rawMetal ? `<li>Raw Metal: ${rawMetal}</li>` : ""}
+      ${scrap ? `<li>Scrap: ${scrap}</li>` : ""}
+      ${cloth ? `<li>Old Cloth: ${cloth}</li>` : ""}
+      ${gear ? `<li>Rusty Gear: ${gear}</li>` : ""}
+      ${wire ? `<li>Ancient Wire: ${wire}</li>` : ""}
+      ${blueprint ? `<li>Blueprint Fragment: ${blueprint}</li>` : ""}
       ${bucketTier > 0 ? `<li>Bucket: ${water}/${bucketCapacity} water</li>` : ""}
       ${items.filter(i => i.tier > 0).map(i => `<li>${i.name} (Tier ${i.tier})</li>`).join("")}
     </ul>
@@ -118,8 +130,11 @@ function refreshContextButtons() {
 }
 
 function refreshUnlocks() {
+  setOptionEnabled("crafting", getTier("craftingTable") > 0);
   setOptionEnabled("cave", window.__caveDiscovered);
   setOptionEnabled("hunting", getTier("spear") > 0);
+  setCraftingTierOptionEnabled(getTier("craftingTable") >= 2);
+  if (getTier("craftingTable") >= 2) show("exploreMoreBtn"); else hide("exploreMoreBtn");
 }
 
 function setOptionEnabled(optionValue, enabled) {
@@ -127,8 +142,137 @@ function setOptionEnabled(optionValue, enabled) {
     const select = document.getElementById(selectId);
     if (!select) return;
     const option = select.querySelector(`option[value="${optionValue}"]`);
-    if (option) option.disabled = !enabled;
+    if (option) {
+      option.disabled = !enabled;
+      if (!enabled && select.value === optionValue) {
+        select.value = "forest";
+        setSlotTab(parseInt(selectId.slice(4), 10), "forest");
+      }
+    }
   });
+}
+
+function setCraftingTierOptionEnabled(enabled) {
+  const select = document.getElementById("craftingTierSelect");
+  if (!select) return;
+  const option = select.querySelector("option[value='t2']");
+  if (!option) return;
+  option.disabled = !enabled;
+  if (!enabled && select.value === "t2") {
+    select.value = "t1";
+    setCraftingTier("t1");
+  }
+}
+
+window.setAllBooleansTrue = function() {
+  Object.keys(window).forEach(key => {
+    if (key.startsWith("__") && typeof window[key] === "boolean") {
+      window[key] = true;
+    }
+  });
+
+  const maxTiers = {
+    craftingTable: 2,
+    knife: 1,
+    pickaxe: 1,
+    bucket: 2,
+    spear: 1,
+    shovel: 1,
+    axe: 1
+  };
+
+  Object.entries(maxTiers).forEach(([name, tier]) => updateItemTier(name, tier));
+
+  const craftingTierSelect = document.getElementById("craftingTierSelect");
+  if (craftingTierSelect) craftingTierSelect.value = "t2";
+  setCraftingTier("t2");
+
+  refreshUnlocks();
+  updateInventoryDisplay();
+};
+
+function setCraftingTier(tier) {
+  const t1 = document.getElementById("craftingT1");
+  const t2 = document.getElementById("craftingT2");
+  if (!t1 || !t2) return;
+  if (tier === "t2" && getTier("craftingTable") >= 2) {
+    hide("craftingT1");
+    show("craftingT2");
+  } else {
+    show("craftingT1");
+    hide("craftingT2");
+  }
+}
+
+window.exploreMore = function() {
+  const result = document.getElementById("exploreResult");
+  if (!result) return;
+
+  const found = Math.random() < 0.1;
+  let logMessage;
+
+  if (!found) {
+    result.textContent = "You explore the area, but the old buildings remain hidden.";
+    logMessage = "Explored the surroundings and found nothing.";
+  } else {
+    const loot = getOldBuildingLoot();
+    addLoot(loot);
+    result.innerHTML = `You found an old building and recovered <span class="rarity ${loot.rarity}">${loot.name}</span>.`;
+    logMessage = `Found an old building and recovered ${loot.name} (${loot.rarity}).`;
+  }
+
+  logExploration(logMessage);
+};
+
+function logExploration(message) {
+  explorationLog.unshift(message);
+  if (explorationLog.length > 10) explorationLog.pop();
+  renderExplorationLog();
+}
+
+function renderExplorationLog() {
+  const logContainer = document.getElementById("explorationLogEntries");
+  if (!logContainer) return;
+  if (explorationLog.length === 0) {
+    logContainer.innerHTML = "<div class=\"explorationEntry\">No exploration activity yet.</div>";
+    return;
+  }
+
+  logContainer.innerHTML = explorationLog
+    .map(entry => `<div class="explorationEntry">${entry}</div>`)
+    .join("");
+}
+
+function getOldBuildingLoot() {
+  const lootTable = [
+    { name: "Scrap metal", key: "scrap", rarity: "common", weight: 40 },
+    { name: "Old cloth", key: "cloth", rarity: "common", weight: 30 },
+    { name: "Rusty gear", key: "gear", rarity: "uncommon", weight: 15 },
+    { name: "Ancient wire", key: "wire", rarity: "rare", weight: 10 },
+    { name: "Blueprint fragment", key: "blueprint", rarity: "epic", weight: 5 }
+  ];
+
+  const totalWeight = lootTable.reduce((sum, item) => sum + item.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (const item of lootTable) {
+    if (roll < item.weight) return item;
+    roll -= item.weight;
+  }
+  return lootTable[lootTable.length - 1];
+}
+
+function addLoot(item) {
+  if (!item || !item.key) return;
+
+  switch (item.key) {
+    case "scrap": scrap++; break;
+    case "cloth": cloth++; break;
+    case "gear": gear++; break;
+    case "wire": wire++; break;
+    case "blueprint": blueprint++; break;
+  }
+
+  updateInventoryDisplay();
 }
 
 // Forest collection
@@ -253,8 +397,15 @@ window.makeT2CraftingTable = function() {
   if (rawMetal >= 30 && clay >= 15 && crudeRope >= 5 && getTier("craftingTable") < 2) {
     rawMetal -= 30; clay -= 15; crudeRope -= 5;
     updateItemTier("craftingTable", 2);
-    show("craftingT2");
-    tabSwitch("crafting");
+    setCraftingTier("t2");
+    const slotSelects = ["slot1Select", "slot2Select", "slot3Select"];
+    slotSelects.forEach(selectId => {
+      const select = document.getElementById(selectId);
+      if (select && select.value === "crafting") {
+        const craftingTier = document.getElementById("craftingTierSelect");
+        if (craftingTier) craftingTier.value = "t2";
+      }
+    });
     hide("makeT2Crafting")
   }
 };
