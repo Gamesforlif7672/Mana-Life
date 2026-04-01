@@ -1,2 +1,2 @@
 # Mana-Life
-this is a website version of a standalone java mod im going to make for minecraft 1.21.11 and yes minecraft version will be way more tedious
+This is a webgame I have made and will continue to develop, on this side of the screen you can switch tabs to see the different files and code made to make the game on the left possible
