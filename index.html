@@ -18,6 +18,7 @@
             <td><button id="inventoryTab" class="tab" onclick="tabSwitch('inventory')">Inventory</button></td>
             <td><button id="caveTab" class="tab" onclick="tabSwitch('cave')">Cave</button></td>
             <td><button id="craftingTab" class="tab" onclick="tabSwitch('crafting')">Crafting</button></td>
+            <td><button id="workshopTab" class="tab" onclick="tabSwitch('workshop')">Workshop</button></td>
             <td><button id="huntingTab" class="tab" onclick="tabSwitch('hunting')">Hunting</button></td>
           </tr>
         </table>
@@ -28,6 +29,7 @@
         <button id="search" class="explore" onclick="discoverCave()">Look around</button><br>
         <button id="stickBtn" class="collect" onclick="collectStick()">Collect Sticks</button><br>
         <button id="stoneBtn" class="collect" onclick="collectStone()">Collect Stones</button><br>
+        <button id="logBtn" class="collect" onclick="collectLog()">Gather Logs</button><br>
       </div>
 
       <div id="explore">
@@ -58,6 +60,16 @@
         <div id="craftingT2">
           <p>You’ve reached the temporary end. More content coming soon.</p>
         </div>
+      </div>
+
+      <div id="workshop">
+        <p>Workshop</p>
+        <button class="collect" id="makeCharcoal" onclick="makeCharcoal()">Make charcoal (10 sticks)</button><br>
+        <button class="craft" id="makeClayBrick" onclick="makeClayBrick()">Make clay brick (2 dirt + 1 water)</button><br>
+        <button class="craft" id="smeltCopper" onclick="smeltCopper()">Smelt copper ingot (2 raw metal + 1 charcoal)</button><br>
+        <button class="craft" id="makeBronze" onclick="makeBronze()">Make bronze ingot (1 copper + 1 raw metal + 1 charcoal)</button><br>
+        <button class="craft" id="makeBronzePickaxe" onclick="makeBronzePickaxe()">Bronze pickaxe (1 bronze ingot + 10 sticks)</button><br>
+        <button class="craft" id="makeBronzeAxe" onclick="makeBronzeAxe()">Bronze axe (1 bronze ingot + 10 sticks)</button><br>
       </div>
 
       <div id="cave">

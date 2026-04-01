@@ -97,9 +97,14 @@ button:hover {
   display: none;
 }
 
-/* Dynamic: cave and hunting tabs hidden until unlocked */
+/* Dynamic: cave, hunting and workshop tabs hidden until unlocked */
 #caveTab,
-#huntingTab {
+#huntingTab,
+#workshopTab {
+  display: none;
+}
+
+#workshop {
   display: none;
 }
 
