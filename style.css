@@ -80,14 +80,9 @@ button:hover {
   cursor: pointer;
 }
 
-/* Default hidden sections/buttons */
+/* Default hidden buttons */
 #craftingTab,
-#crafting,
 #craftingT2,
-#inventory,
-#explore,
-#cave,
-#hunting,
 #makeT1Crafting,
 #fillBucket,
 #mineDirt,
@@ -97,15 +92,42 @@ button:hover {
   display: none;
 }
 
-/* Dynamic: cave, hunting and workshop tabs hidden until unlocked */
-#caveTab,
-#huntingTab,
-#workshopTab {
+#tabTemplates {
   display: none;
 }
 
-#workshop {
-  display: none;
+#tabBar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.slotSelect {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#contentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.column {
+  background: #121217;
+  border: 2px solid #333;
+  border-radius: 10px;
+  padding: 1rem;
+  min-height: 300px;
+}
+
+.columnTitle {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #ddd;
 }
 
 #inventoryDisplay {

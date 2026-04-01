@@ -1,11 +1,6 @@
 // Resources
 let stick = 0;
 let stone = 0;
-let log = 0;
-let charcoal = 0;
-let clayBrick = 0;
-let copperIngot = 0;
-let bronzeIngot = 0;
 let thatch = 0;
 let crudeRope = 0;
 let meat = 0;
@@ -22,9 +17,7 @@ let items = [
   { name: "bucket", tier: 0 },
   { name: "spear", tier: 0 },
   { name: "shovel", tier: 0 },
-  { name: "axe", tier: 0 },
-  { name: "bronzePickaxe", tier: 0 },
-  { name: "bronzeAxe", tier: 0 }
+  { name: "axe", tier: 0 }
 ];
 
 // Bucket capacity by tier
@@ -47,7 +40,7 @@ function getTier(itemName) {
 function show(id) { let el = document.getElementById(id); if (el) el.style.display = "block"; }
 function hide(id) { let el = document.getElementById(id); if (el) el.style.display = "none"; }
 
-// Tab switching
+// Tab switching (unused with 3-panel layout)
 window.tabSwitch = function(id) {
   let children = document.querySelectorAll("#gameArea > *");
   children.forEach(child => {
@@ -58,12 +51,29 @@ window.tabSwitch = function(id) {
   console.log("Switched to tab:", id);
 };
 
+window.setSlotTab = function(slotIndex, tabId) {
+  const slotContent = document.getElementById(`slot${slotIndex}Content`);
+  const templates = document.getElementById("tabTemplates");
+  if (!slotContent || !templates) return;
+
+  const currentTab = slotContent.firstElementChild;
+  if (currentTab && currentTab.id !== tabId) {
+    templates.appendChild(currentTab);
+  }
+
+  const targetTab = document.getElementById(tabId);
+  if (!targetTab) return;
+  slotContent.appendChild(targetTab);
+};
+
 // Begin game
 window.beginGame = function() {
   hide("begin");
   show("gameArea");
   show("tabBar");
-  tabSwitch("forest");
+  setSlotTab(1, "forest");
+  setSlotTab(2, "inventory");
+  setSlotTab(3, "crafting");
   updateInventoryDisplay();
   refreshUnlocks();
 };
@@ -81,11 +91,6 @@ function updateInventoryDisplay() {
     <ul>
       ${stick ? `<li>Sticks: ${stick}</li>` : ""}
       ${stone ? `<li>Stones: ${stone}</li>` : ""}
-      ${log ? `<li>Logs: ${log}</li>` : ""}
-      ${charcoal ? `<li>Charcoal: ${charcoal}</li>` : ""}
-      ${clayBrick ? `<li>Clay Bricks: ${clayBrick}</li>` : ""}
-      ${copperIngot ? `<li>Copper Ingots: ${copperIngot}</li>` : ""}
-      ${bronzeIngot ? `<li>Bronze Ingots: ${bronzeIngot}</li>` : ""}
       ${thatch ? `<li>Thatch: ${thatch}</li>` : ""}
       ${crudeRope ? `<li>Crude Rope: ${crudeRope}</li>` : ""}
       ${meat ? `<li>Meat: ${meat}</li>` : ""}
@@ -113,21 +118,23 @@ function refreshContextButtons() {
 }
 
 function refreshUnlocks() {
-  if (window.__caveDiscovered) show("caveTab"); else hide("caveTab");
-  if (getTier("spear") > 0) show("huntingTab"); else hide("huntingTab");
-  if (getTier("craftingTable") >= 2) show("workshopTab"); else hide("workshopTab");
+  setOptionEnabled("cave", window.__caveDiscovered);
+  setOptionEnabled("hunting", getTier("spear") > 0);
+}
+
+function setOptionEnabled(optionValue, enabled) {
+  ["slot1Select", "slot2Select", "slot3Select"].forEach(selectId => {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    const option = select.querySelector(`option[value="${optionValue}"]`);
+    if (option) option.disabled = !enabled;
+  });
 }
 
 // Forest collection
 window.collectStick = function() {
   let tier = getTier("axe");
   stick += tier === 0 ? 1 : tier ** 10;
-  updateInventoryDisplay();
-};
-
-window.collectLog = function() {
-  let tier = getTier("bronzeAxe") > 0 ? 2 : getTier("axe") > 0 ? 1 : 0;
-  log += tier === 2 ? 3 : tier === 1 ? 2 : 1;
   updateInventoryDisplay();
 };
 
@@ -158,15 +165,7 @@ window.discoverCave = function() {
 
 // Cave
 window.mineCave = function() {
-  if (getTier("bronzePickaxe") > 0) {
-    stone += 5;
-    rawMetal += 2;
-    updateInventoryDisplay();
-  } else if (getTier("pickaxe") > 0) {
-    stone += 3;
-    rawMetal += 1;
-    updateInventoryDisplay();
-  }
+  if (getTier("pickaxe") > 0) { stone += 3; rawMetal += 1; updateInventoryDisplay(); }
 };
 
 window.collectRawMetal = function() {
@@ -200,23 +199,6 @@ window.makeThatch = function() {
   if (getTier("knife") > 0 && stick >= 1) { stick--; thatch++; updateInventoryDisplay(); }
 };
 
-window.makeCharcoal = function() {
-  if (stick >= 10) {
-    stick -= 10;
-    charcoal++;
-    updateInventoryDisplay();
-  }
-};
-
-window.makeClayBrick = function() {
-  if (dirt >= 2 && water > 0) {
-    dirt -= 2;
-    water -= 1;
-    clayBrick++;
-    updateInventoryDisplay();
-  }
-};
-
 window.makeRope = function() {
   if (thatch >= 25) { thatch -= 25; crudeRope++; updateInventoryDisplay(); }
 };
@@ -226,43 +208,6 @@ window.makePickaxe = function() {
     stick -= 20; stone -= 25;
     updateItemTier("pickaxe", 1);
     hide("makePickaxe")
-  }
-};
-
-window.smeltCopper = function() {
-  if (rawMetal >= 2 && charcoal >= 1) {
-    rawMetal -= 2;
-    charcoal -= 1;
-    copperIngot++;
-    updateInventoryDisplay();
-  }
-};
-
-window.makeBronze = function() {
-  if (copperIngot >= 1 && rawMetal >= 1 && charcoal >= 1) {
-    copperIngot -= 1;
-    rawMetal -= 1;
-    charcoal -= 1;
-    bronzeIngot++;
-    updateInventoryDisplay();
-  }
-};
-
-window.makeBronzePickaxe = function() {
-  if (bronzeIngot >= 1 && stick >= 10 && getTier("bronzePickaxe") === 0) {
-    bronzeIngot -= 1;
-    stick -= 10;
-    updateItemTier("bronzePickaxe", 1);
-    hide("makeBronzePickaxe");
-  }
-};
-
-window.makeBronzeAxe = function() {
-  if (bronzeIngot >= 1 && stick >= 10 && getTier("bronzeAxe") === 0) {
-    bronzeIngot -= 1;
-    stick -= 10;
-    updateItemTier("bronzeAxe", 1);
-    hide("makeBronzeAxe");
   }
 };
 
