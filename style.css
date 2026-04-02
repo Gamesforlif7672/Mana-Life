@@ -268,6 +268,16 @@ button:hover {
   .slotSelect label {
     display: block;
     margin-bottom: 0.35rem;
+    position: relative;
+    color: transparent;
+  }
+
+  .slotSelect label::after {
+    content: attr(data-mobile-label);
+    color: #ddd;
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 
   .slotSelect select,
