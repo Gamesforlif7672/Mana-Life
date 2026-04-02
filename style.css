@@ -238,6 +238,8 @@ button:hover {
   html, body {
     padding: 0.75rem;
     font-size: 16px;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
   }
 
   #begin {
