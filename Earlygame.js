@@ -1,3 +1,5 @@
+
+
 // Resources
 let stick = 0;
 let stone = 0;
@@ -14,6 +16,8 @@ let gear = 0;
 let wire = 0;
 let blueprint = 0;
 let explorationLog = []; 
+let driedBrick = 0;
+let wetBrick= 0;
 
 // Items with tiers
 let items = [
@@ -23,14 +27,15 @@ let items = [
   { name: "bucket", tier: 0 },
   { name: "spear", tier: 0 },
   { name: "shovel", tier: 0 },
-  { name: "axe", tier: 0 }
+  { name: "axe", tier: 0 },
+  { name: "brickForm", tier: 0 }
 ];
 
 // Bucket capacity by tier
-const bucketCapacityByTier = { 0: 0, 1: 1, 2: 5, 3: 10, 4: 15, 5: 20 };
+const bucketCapacityByTier = { 0: 0, 1: 1, 2: 5, 3: 10, 4: 25, 5: 50 };
 
 // Helpers
-function updateItemTier(itemName, newTier) {
+window.updateItemTier = function(itemName, newTier) {
   let item = items.find(i => i.name === itemName);
   if (item) {
     item.tier = newTier;
@@ -38,16 +43,16 @@ function updateItemTier(itemName, newTier) {
   }
 }
 
-function getTier(itemName) {
+window.getTier = function(itemName) {
   let item = items.find(i => i.name === itemName);
   return item ? item.tier : 0;
 }
 
-function show(id) { let el = document.getElementById(id); if (el) el.style.display = "block"; }
-function hide(id) { let el = document.getElementById(id); if (el) el.style.display = "none"; }
+window.show = function(id) { let el = document.getElementById(id); if (el) el.style.display = "block"; }
+window.hide = function(id) { let el = document.getElementById(id); if (el) el.style.display = "none"; }
 
 // Tab switching (unused with 3-panel layout)
-window.tabSwitch = function(id) {
+function tabSwitch(id) {
   let children = document.querySelectorAll("#gameArea > *");
   children.forEach(child => {
     if (child.id === "tabBar") show(child.id);
@@ -57,7 +62,7 @@ window.tabSwitch = function(id) {
   console.log("Switched to tab:", id);
 };
 
-window.setSlotTab = function(slotIndex, tabId) {
+function setSlotTab(slotIndex, tabId) {
   const slotContent = document.getElementById(`slot${slotIndex}Content`);
   const templates = document.getElementById("tabTemplates");
   if (!slotContent || !templates) return;
@@ -73,20 +78,20 @@ window.setSlotTab = function(slotIndex, tabId) {
 };
 
 // Begin game
-window.beginGame = function() {
+function beginGame() {
   hide("begin");
   show("gameArea");
   show("tabBar");
   setSlotTab(1, "forest");
   setSlotTab(2, "inventory");
-  setSlotTab(3, "explore");
+  setSlotTab(3, "crafting");
   updateInventoryDisplay();
   refreshUnlocks();
   renderExplorationLog();
 };
 
 // Inventory display
-function updateInventoryDisplay() {
+window.updateInventoryDisplay = function() {
   const el = document.getElementById("inventoryDisplay");
   if (!el) return;
 
@@ -111,6 +116,8 @@ function updateInventoryDisplay() {
       ${blueprint ? `<li>Blueprint Fragment: ${blueprint}</li>` : ""}
       ${bucketTier > 0 ? `<li>Bucket: ${water}/${bucketCapacity} water</li>` : ""}
       ${items.filter(i => i.tier > 0).map(i => `<li>${i.name} (Tier ${i.tier})</li>`).join("")}
+      ${wetBrick ? `<li>Wet Brick: ${wetBrick}</li>` : ""}
+      ${driedBrick ? `<li>Dried Brick: ${driedBrick}</li>` : ""}
     </ul>
   `;
 
@@ -121,7 +128,7 @@ function updateInventoryDisplay() {
   refreshUnlocks();
 }
 
-function refreshContextButtons() {
+window.refreshContextButtons = function() {
   if (getTier("bucket") > 0) show("fillBucket"); else hide("fillBucket");
   if (getTier("shovel") > 0) show("mineDirt"); else hide("mineDirt");
   if (getTier("pickaxe") > 0) { show("mineStoneMetal"); show("rawMetalBtn"); }
@@ -129,7 +136,7 @@ function refreshContextButtons() {
   if (getTier("spear") > 0) show("huntBtn"); else hide("huntBtn");
 }
 
-function refreshUnlocks() {
+window.refreshUnlocks = function() {
   setOptionEnabled("crafting", getTier("craftingTable") > 0);
   setOptionEnabled("cave", window.__caveDiscovered);
   setOptionEnabled("hunting", getTier("spear") > 0);
@@ -137,7 +144,7 @@ function refreshUnlocks() {
   if (getTier("craftingTable") >= 2) show("exploreMoreBtn"); else hide("exploreMoreBtn");
 }
 
-function setOptionEnabled(optionValue, enabled) {
+window.setOptionEnabled = function(optionValue, enabled) {
   ["slot1Select", "slot2Select", "slot3Select"].forEach(selectId => {
     const select = document.getElementById(selectId);
     if (!select) return;
@@ -191,7 +198,7 @@ window.setAllBooleansTrue = function() {
   updateInventoryDisplay();
 };
 
-function setCraftingTier(tier) {
+window.setCraftingTier = function(tier) {
   const t1 = document.getElementById("craftingT1");
   const t2 = document.getElementById("craftingT2");
   if (!t1 || !t2) return;
@@ -204,7 +211,7 @@ function setCraftingTier(tier) {
   }
 }
 
-window.exploreMore = function() {
+function exploreMore() {
   const result = document.getElementById("exploreResult");
   if (!result) return;
 
@@ -245,11 +252,11 @@ function renderExplorationLog() {
 
 function getOldBuildingLoot() {
   const lootTable = [
-    { name: "Scrap metal", key: "scrap", rarity: "common", weight: 40 },
-    { name: "Old cloth", key: "cloth", rarity: "common", weight: 30 },
-    { name: "Rusty gear", key: "gear", rarity: "uncommon", weight: 15 },
-    { name: "Ancient wire", key: "wire", rarity: "rare", weight: 10 },
-    { name: "Blueprint fragment", key: "blueprint", rarity: "epic", weight: 5 }
+    { name: "Scrap metal", key: "scrap", rarity: "common", weight: 20 },
+    { name: "Old cloth", key: "cloth", rarity: "common", weight: 15 },
+    { name: "Rusty gear", key: "gear", rarity: "uncommon", weight: 10 },
+    { name: "Ancient wire", key: "wire", rarity: "rare", weight: 5 },
+    { name: "Blueprint fragment", key: "blueprint", rarity: "epic", weight: 2 }
   ];
 
   const totalWeight = lootTable.reduce((sum, item) => sum + item.weight, 0);
@@ -276,53 +283,53 @@ function addLoot(item) {
 }
 
 // Forest collection
-window.collectStick = function() {
+function collectStick() {
   let tier = getTier("axe");
-  stick += tier === 0 ? 1 : tier ** 10;
+  stick += tier === 0 ? 1 : 10 ** tier;
   updateInventoryDisplay();
 };
 
-window.collectStone = function() {
+function collectStone() {
   let tier = getTier("pickaxe");
-  stone += tier === 0 ? 1 : tier ** 10;
+  stone += tier === 0 ? 1 : 10 ** tier;
   updateInventoryDisplay();
 };
 
 // Explore
-window.fillBucket = function() {
+function fillBucket() {
   let capacity = bucketCapacityByTier[getTier("bucket")];
   if (capacity > 0) { water = capacity; updateInventoryDisplay(); }
 };
 
-window.mineDirt = function() {
+function mineDirt() {
   if (getTier("shovel") > 0) { 
     dirt += getTier("shovel") * 3;
      updateInventoryDisplay(); 
      }
 };
 
-window.discoverCave = function() {
+function discoverCave() {
   window.__caveDiscovered = true;
   refreshUnlocks();
   hide("search");
 };
 
 // Cave
-window.mineCave = function() {
+function mineCave() {
   if (getTier("pickaxe") > 0) { stone += 3; rawMetal += 1; updateInventoryDisplay(); }
 };
 
-window.collectRawMetal = function() {
+function collectRawMetal() {
   if (getTier("pickaxe") > 0) { rawMetal++; updateInventoryDisplay(); }
 };
 
 // Hunting
-window.huntMeat = function() {
+function huntMeat() {
   if (getTier("spear") > 0) { meat += getTier("spear") * 5; updateInventoryDisplay(); }
 };
 
 // Crafting
-window.makeT1CraftingTable = function() {
+function makeT1CraftingTable() {
   if (stick >= 10 && stone >= 5 && getTier("craftingTable") === 0) {
     stick -= 10; stone -= 5;
     updateItemTier("craftingTable", 1);
@@ -331,7 +338,7 @@ window.makeT1CraftingTable = function() {
   }
 };
 
-window.makeKnife = function() {
+function makeKnife() {
   if (stick >= 10 && stone >= 15 && getTier("knife") === 0) {
     stick -= 10; stone -= 15;
     updateItemTier("knife", 1);
@@ -339,15 +346,15 @@ window.makeKnife = function() {
   }
 };
 
-window.makeThatch = function() {
+function makeThatch() {
   if (getTier("knife") > 0 && stick >= 1) { stick--; thatch++; updateInventoryDisplay(); }
 };
 
-window.makeRope = function() {
+function makeRope() {
   if (thatch >= 25) { thatch -= 25; crudeRope++; updateInventoryDisplay(); }
 };
 
-window.makePickaxe = function() {
+function makePickaxe() {
   if (stick >= 20 && stone >= 25 && getTier("pickaxe") === 0) {
     stick -= 20; stone -= 25;
     updateItemTier("pickaxe", 1);
@@ -355,7 +362,7 @@ window.makePickaxe = function() {
   }
 };
 
-window.makeShovel = function() {
+function makeShovel() {
   if (stick >= 15 && stone >= 10 && getTier("shovel") === 0) {
     stick -= 15; stone -= 10;
     updateItemTier("shovel", 1);
@@ -363,7 +370,7 @@ window.makeShovel = function() {
   }
 };
 
-window.makeBucket = function() {
+function makeBucket() {
   if (stone >= 50 && getTier("bucket") === 0) {
     stone -= 50;
     updateItemTier("bucket", 1);
@@ -371,7 +378,7 @@ window.makeBucket = function() {
   }
 };
 
-window.makeSpear = function() {
+function makeSpear() {
   if (stick >= 30 && stone >= 15 && getTier("spear") === 0) {
     stick -= 30; stone -= 15;
     updateItemTier("spear", 1);
@@ -380,11 +387,11 @@ window.makeSpear = function() {
   }
 };
 
-window.makeClay = function() {
+function makeClay() {
   if (dirt >= 5 && water > 0) { dirt -= 5; water--; clay++; updateInventoryDisplay(); }
 };
 
-window.upgradeBucket = function() {
+function upgradeBucket() {
   if (rawMetal >= 20 && clay >= 10) {
     rawMetal -= 20; clay -= 10;
     updateItemTier("bucket", 2);
@@ -393,7 +400,7 @@ window.upgradeBucket = function() {
   }
 };
 
-window.makeT2CraftingTable = function() {
+function makeT2CraftingTable() {
   if (rawMetal >= 30 && clay >= 15 && crudeRope >= 5 && getTier("craftingTable") < 2) {
     rawMetal -= 30; clay -= 15; crudeRope -= 5;
     updateItemTier("craftingTable", 2);
@@ -410,4 +417,46 @@ window.makeT2CraftingTable = function() {
   }
 };
 
+function makeBrickForm() {
+  if (clay >= 15 && stone >= 10 && getTier("craftingTable") >= 2) {
+    clay -= 15; stone -= 10;
+    updateItemTier("brickForm", 0.5);
+    hide("makeBrickForm");
+    show("dryBrickForm")
+  }
+}
+
+function dryBrickForm() {
+  if (getTier("brickForm") > 0) {
+    updateItemTier("brickForm", 1);
+    updateInventoryDisplay();
+  }
+};
+
 window.__caveDiscovered = false;
+
+Object.assign(window, {
+    stick,
+    stone,
+    thatch,
+    crudeRope,
+    meat,
+    dirt,
+    water,
+    clay,
+    rawMetal,
+    scrap,
+    cloth,
+    gear,
+    wire,
+    blueprint,
+    driedBrick,
+    wetBrick
+});
+
+
+window.items = items;
+
+
+
+

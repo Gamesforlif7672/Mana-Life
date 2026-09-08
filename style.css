@@ -320,3 +320,10 @@ button:hover {
     font-size: 0.95rem;
   }
 }
+
+
+.sideBar {
+  border-width: 3px;
+  border-style: solid;
+  border-radius: 15px
+}
