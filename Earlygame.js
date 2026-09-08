@@ -84,7 +84,7 @@ function beginGame() {
   show("tabBar");
   setSlotTab(1, "forest");
   setSlotTab(2, "inventory");
-  setSlotTab(3, "crafting");
+  setSlotTab(3, "river");
   updateInventoryDisplay();
   refreshUnlocks();
   renderExplorationLog();
